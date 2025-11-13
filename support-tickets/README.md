@@ -49,4 +49,10 @@ npm i prisma @prisma/client
 ### Sentry
 
 go to [sentry.io](sentry.io) add a project using next and follow the steppes using default settings
-Now you can go to "http://localhost:3000/**sentry-example-page"**
+Now you can go to "http://localhost:3000/**sentry-example-page"
+
+### Neon
+
+Go to "neon.tech" create a project and copy the go ro connect and show password and copt the url to **.env
+
+### Prisma
