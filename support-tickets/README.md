@@ -54,8 +54,47 @@ Now you can go to "http://localhost:3000/**sentry-example-page"
 
 Go to "neon.tech" create a project and copy the go ro connect and show password and copt the url to **.env
 
-Int prisma by running 
+Int prisma by running
 
 ```
 npx prisma init
+```
+
+#### Updating Prisma schema
+
+##### migrate
+
+run to migrate
+
+```
+ $npx prisma migrate dev --name init
+```
+
+where
+
+* **`prisma migrate dev`** : Runs Prisma's migration command for development environments
+* **`--name init`** : Names this migration "init" (or whatever name you provide)
+
+##### to generate client
+
+Generates the **Prisma Client** - a type-safe database client based on your `schema.prisma` file.
+
+and add it as a script in the package.json
+
+![1763162611576](image/README/1763162611576.png)
+
+###### Breakdown:
+
+1. **Reads your `schema.prisma`** file
+2. **Creates TypeScript/JavaScript code** that provides type-safe access to your database
+3. **Outputs to the location** specified in your `generator client` block (in your case: `../app/generated/prisma`)
+
+```
+npx prisma generate
+```
+
+##### prisma studio
+
+```
+npx prisma studio
 ```
