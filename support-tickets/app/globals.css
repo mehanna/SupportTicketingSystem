@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #eff6ff;
   --foreground: #171717;
 }
 
@@ -11,16 +11,38 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
-
+/* Dark mode styles */
+/*
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
 }
+*/
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Slide-up animation 
+that is used in the page components in line 18 
+sideUp will change to slideDown if you want the reverse effect
+animate-slide is the class that you will add to the element you want to animate 
+*/
+@keyframes slideUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-slide {
+  animation: slideUp 0.5s ease-in forwards;
+  animation-delay: 0.2s;
 }
