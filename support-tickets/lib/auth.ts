@@ -7,8 +7,11 @@ const secret = new TextEncoder().encode(process.env.AUTH_SECRET);
 
 const cookieName = "auth-token";
 
-
-// This will encrypt and sign a JWT token with the given payload */
+/**
+ * This will encrypt and sign a JWT token with the given payload 
+ * @param payload - The payload to include in the JWT token
+ * @returns The signed JWT token as a string
+ * */
 export async function signAuthToken(payload: any) {
   try {
     /* 
@@ -36,10 +39,12 @@ export async function signAuthToken(payload: any) {
   }
 }
 
-/* This will verify and decode a JWT token
-    Input: token string
-    Output: payload object of type T (email, userId, etc.)
-*/
+/**
+ * This will verify and decode a JWT token
+ * @param token - The JWT token to verify and decode
+ * @returns The decoded payload of any type T
+ */
+
 export async function verifyAuthToken<T>(token: string): Promise<T> {
   try {
     const { payload } = await jwtVerify(token, secret);
@@ -51,6 +56,35 @@ export async function verifyAuthToken<T>(token: string): Promise<T> {
         'error',
         error
     );
-    throw new Error(`Error verifying auth token : ${error}`);
+    throw new Error(`Error verifying token decryption : ${error}`);
   }
+}
+
+
+/**
+ * This function sets the authentication cookie in the user's browser.
+ * @param token 
+ */
+export async function setAuthCookie(token: string) {
+    try {
+        const cookieStore = await cookies();
+        cookieStore.set({
+            name: cookieName,
+            value: token,
+            httpOnly: true,
+            sameSite: 'lax',// means the cookie is sent with same-site requests and with cross-site top-level navigation
+            secure: process.env.NODE_ENV === 'production',
+            path: '/',
+            maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+        });
+    } catch (error) {
+        logEvent("Set Auth Cookie Error", 
+            'auth',
+            {tokenSnippet: token.slice(0,10) + '...'},
+            'error',
+            error
+        );
+        throw new Error(`Error setting auth cookie : ${error}`);
+    }
+
 }
