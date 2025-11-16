@@ -3,6 +3,7 @@ import { prisma } from '@/db/prisma';
 import { revalidatePath } from 'next/cache';// this is used to revalidate the path after creating a ticket
 import { logEvent } from '@/utils/sentry';
 import { log } from 'console';
+import { getCurrentUser } from '@/lib/current-user';
 
 interface TicketActionState {
     success: boolean;
@@ -14,6 +15,16 @@ export async function createTicket(
     formData: FormData
 ): Promise<TicketActionState> {
     try {
+        const currentUser = await getCurrentUser();
+        if (!currentUser) {
+            logEvent(
+                'Ticket creation failed: user not authenticated',
+                'ticket',
+                {},
+                'warning'
+            );
+            return { success: false, message: 'You must be logged in to create a ticket.' };
+        }
         const subject = formData.get('subject') as string;
         const description = formData.get('description') as string;
         const priority = formData.get('priority') as string;
@@ -33,7 +44,8 @@ export async function createTicket(
             data: {
                 subject,
                 description,
-                priority
+                priority,
+                userId: currentUser.id,
             },
         });
         // Log successful ticket creation
