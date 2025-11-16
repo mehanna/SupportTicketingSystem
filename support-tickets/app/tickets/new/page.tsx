@@ -1,15 +1,27 @@
+'use client';
+import { useActionState } from "react";
 import {createTicket} from '@/actions/ticket.actions';
 
 
 
 const NewTicketPage = () => {
-      return (
+
+    // this is react 19's new way of handling server actions' state
+    // useActionState is a React 19 hook that allows you to manage the state 
+    // returned by a server action
+    const [state, FormAction] = useActionState(createTicket, {
+       success: false,
+       message: ''
+    });
+
+
+    return (
     <div className='min-h-screen bg-blue-50 flex items-center justify-center px-4'>
         <div className='w-full max-w-md bg-white shadow-md rounded-lg p-8 border border-gray-200'>
         <h1 className='text-3xl font-bold mb-6 text-center text-blue-600'>
             Submit a Support Ticket
         </h1>
-        <form action={createTicket} className='space-y-4 text-gray-700'>
+        <form action={FormAction} className='space-y-4 text-gray-700'>
             <input
             className='w-full border border-gray-200 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-400'
             type='text'
@@ -21,6 +33,7 @@ const NewTicketPage = () => {
             name='description'
             placeholder='Describe your issue'
             rows={4}
+            required
             />
             <select
             className='w-full border border-gray-200 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700'
