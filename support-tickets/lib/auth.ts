@@ -8,7 +8,11 @@ const secret = new TextEncoder().encode(process.env.AUTH_SECRET);
 const cookieName = "auth-token";
 
 
+<<<<<<< HEAD
 //* This will encrypt and sign a JWT token with the given payload */
+=======
+//* This function verifies the JWT token from cookies and returns the payload if valid */
+>>>>>>> 3c0cba65caeeeeb0ea2e5e3f6da698cbd3e0927f
 export async function signAuthToken(payload: any) {
   try {
     /* 
