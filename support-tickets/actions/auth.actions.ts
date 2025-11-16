@@ -3,7 +3,7 @@
 import { prisma } from '@/db/prisma';
 import { logEvent } from '@/utils/sentry';
 import bcrypt from 'bcryptjs';
-import {signAuthToken, setAuthCookie} from '@/lib/auth';
+import {signAuthToken, setAuthCookie,removeAuthCookie} from '@/lib/auth';
 import { log } from 'console';
 
 type responseState = {
@@ -105,4 +105,33 @@ export async function registerUser(
         return { success: false, message: 'An error occurred during registration.' };
     }
 
+}
+
+
+
+/**
+ * Logout user by clearing auth cookie
+ * @returns responseState
+*/
+export async function logoutUser(): Promise<responseState> {
+    try {
+        await removeAuthCookie();
+        logEvent(
+            `User logged out and auth cookie cleared`,
+            'auth',
+            {},
+            'info'  
+        );
+        return { success: true, message: 'User logged out successfully' };
+    }
+    catch (error) {
+        logEvent(
+            'Logout failed: unexpected error',
+            'auth',
+            {},
+            'error',
+            error
+        );
+        return { success: false, message: 'An error occurred during logout.' };
+    }
 }
