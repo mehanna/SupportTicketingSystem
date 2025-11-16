@@ -2,6 +2,7 @@
 import { useActionState,useEffect} from "react";
 import { useRouter } from "next/navigation";
 import {createTicket} from '@/actions/ticket.actions';
+import {toast} from 'sonner';
 
 
 
@@ -19,6 +20,7 @@ const NewTicketPage = () => {
     const router = useRouter();
     useEffect(() => {
       if (state.success) {
+        toast.success('Ticket created successfully!');
         router.push('/tickets');
       }
     }, [state.success, router]);
