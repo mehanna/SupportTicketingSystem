@@ -98,3 +98,14 @@ npx prisma generate
 ```
 npx prisma studio
 ```
+
+
+## bcryptjs jose cookie
+
+bcryptjs : to encryption password 
+
+jose: for jason we token 
+
+cookie for cookies
+
+
