@@ -1,7 +1,7 @@
 'use server';
-import * as Sentry from '@sentry/nextjs';
 import { prisma } from '@/db/prisma';
 import { revalidatePath } from 'next/cache';// this is used to revalidate the path after creating a ticket
+import { logEvent } from '@/utils/sentry';
 
 interface TicketActionState {
     success: boolean;
@@ -17,15 +17,14 @@ export async function createTicket(
         const description = formData.get('description') as string;
         const priority = formData.get('priority') as string;
 
-        console.log('Creating ticket with the following details:');
-        console.log('Subject:', subject);
-        console.log('Description:', description);
-        console.log('Priority:', priority);
         // Adding console log to ticket creation action
         if (!subject || !description || !priority) {
-            Sentry.captureMessage(
-                'Ticket creation failed: missing required fields', 
-                { level: 'warning' });
+            logEvent(
+                'Ticket creation failed: missing required fields',
+                'ticket',
+                { subject, description, priority },
+                'warning'
+            );
             return { success: false, message: 'All fields are required.' };
         }
         // create the ticket in the database
@@ -36,22 +35,26 @@ export async function createTicket(
                 priority
             },
         });
-        Sentry.addBreadcrumb({
-            category: 'ticket',
-            message: `Ticket created with ID: ${ticket.id}`,
-            level: 'info'
-        });
-        Sentry.captureMessage(`Ticket created successfully with ID: ${ticket.id}`);
-
+        // Log successful ticket creation
+        logEvent(
+            `Ticket created with ID: ${ticket.id}`,
+            'ticket',
+            { ticketId: ticket.id },
+            'info'
+        );
         // revalidate the tickets list page to show the new ticket
         // what will happen is that Next.js will regenerate the /tickets page
         revalidatePath('/tickets');
 
         return { success: true, message: 'Ticket created successfully' };
     } catch (error) {
-        Sentry.captureException(error as Error, {
-            extra: { formData: Object.fromEntries(formData.entries()) }
-        });
+        logEvent(
+            'Ticket creation failed: unexpected error',
+            'ticket',
+            {formData: Object.fromEntries(formData.entries())},
+            'error',
+            error
+        );
         return { success: false, message: 'An error occurred while creating the ticket.' };
     }
 }
