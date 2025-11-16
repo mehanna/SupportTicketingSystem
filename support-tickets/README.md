@@ -99,13 +99,43 @@ npx prisma generate
 npx prisma studio
 ```
 
-
 ## bcryptjs jose cookie
 
-bcryptjs : to encryption password 
-
-jose: for jason we token 
+bcryptjs : to encryption password
 
 cookie for cookies
 
+jose: for json web token
 
+### What is for json web token
+
+A compact, URL-safe means of representing claims to be transferred between parties. It is a long string with 3 parts:
+
+* ﻿﻿Header: Says it's a JWT and what algorithm it uses
+* ﻿﻿Payload: Your user info or any data you want to send
+* ﻿﻿Signature: Special hash to make sure it has not been tampered with
+
+example at [jwt.io](https://www.jwt.io/)
+
+### Auth Flow
+
+* ﻿﻿Log in with credentials
+* ﻿﻿Server checks credentials
+* ﻿﻿Store the token in cookie. You can also use local storage
+* ﻿﻿Send it with future requests
+* ﻿﻿Server verifies token and makes sure it is not altered
+
+#### High-Level Functions
+
+* ﻿﻿registerser: Creates a new user
+* ﻿﻿loginUser: Authenticate user with credentials
+* ﻿﻿logoutUser: Calls removeAuthToken0, clears user
+* ﻿﻿getCurrentUser: Get the logged in user
+
+##### Low-Level Functions
+
+* ﻿﻿signAuthToken: Generates, encrypt and sign token with secret
+* ﻿﻿verify AuthToken: Decrypt and verify token
+* ﻿﻿setAuthCookie: Set token to cookie
+* ﻿﻿getAuthCookie: Get token from cookie
+* ﻿﻿removeAuthCookie: Remove token cookie
