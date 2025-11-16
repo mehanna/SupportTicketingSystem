@@ -8,7 +8,7 @@ const secret = new TextEncoder().encode(process.env.AUTH_SECRET);
 const cookieName = "auth-token";
 
 
-//* This will encrypt and sign a JWT token with the given payload */
+// This will encrypt and sign a JWT token with the given payload */
 export async function signAuthToken(payload: any) {
   try {
     /* 
@@ -36,3 +36,21 @@ export async function signAuthToken(payload: any) {
   }
 }
 
+/* This will verify and decode a JWT token
+    Input: token string
+    Output: payload object of type T (email, userId, etc.)
+*/
+export async function verifyAuthToken<T>(token: string): Promise<T> {
+  try {
+    const { payload } = await jwtVerify(token, secret);
+    return payload as T;
+  } catch (error) {
+    logEvent("Token Verification Error", 
+        'auth',
+        {tokenSnippet: token.slice(0,10) + '...'},
+        'error',
+        error
+    );
+    throw new Error(`Error verifying auth token : ${error}`);
+  }
+}
