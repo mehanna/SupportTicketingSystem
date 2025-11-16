@@ -88,3 +88,41 @@ export async function setAuthCookie(token: string) {
     }
 
 }
+
+/**
+ * This function will get auth cookie 
+ *  @returns The value of the auth cookie or null if not found
+ */
+export async function getAuthCookie(){
+    try {
+        const cookieStore = await cookies();
+        const authCookie = cookieStore.get(cookieName);
+        return authCookie?.value || null;
+    } catch (error) {
+        logEvent("Get Auth Cookie Error", 
+            'auth',
+            {},
+            'error',
+            error
+        );
+        throw new Error(`Error getting auth cookie : ${error}`);
+    }
+}
+
+/**
+ * This function remove the auth cookie
+ */
+export async function removeAuthCookie() {
+    try {
+        const cookieStore = await cookies();
+        cookieStore.delete(cookieName); 
+    } catch (error) {
+        logEvent("Remove Auth Cookie Error", 
+            'auth',
+            {},
+            'error',
+            error
+        );
+        throw new Error(`Error removing auth cookie : ${error}`);
+    }
+}
