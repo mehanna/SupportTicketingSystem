@@ -135,3 +135,66 @@ export async function logoutUser(): Promise<responseState> {
         return { success: false, message: 'An error occurred during logout.' };
     }
 }
+
+
+/**
+ * log in user by setting auth cookie with signed token
+ */
+export async function loginUser(
+  prevState: responseState,
+  formData: FormData
+): Promise<responseState> {
+    try {
+        const email = formData.get('email') as string;
+        const password = formData.get('password') as string;
+        if (!email || !password) {
+            logEvent(
+                'Login failed: missing email or password',
+                'auth',
+                { email },
+                'warning'
+            );
+            return { success: false, message: 'Email and password are required.' };
+        }
+        // Fetch user from database
+        const user = await prisma.user.findUnique({
+            where: { email },
+        });
+        // Check if user exists
+        if (!user) {
+            logEvent(
+                'Login failed: user not found',
+                'auth',
+                { email },
+                'warning'
+            );
+            return { success: false, message: 'Invalid email or password.' };
+        }
+        // Compare passwords
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            logEvent(
+                'Login failed: invalid password',
+                'auth',
+                { email },
+                'warning'
+            );
+            return { success: false, message: 'Invalid email or password.' };
+        }
+        const token = await signAuthToken({ userId: user.id });
+        await setAuthCookie(token);
+
+        return { success: true, message: 'Login successful' };
+
+    } catch (error) {
+        logEvent(
+            'Login failed: unexpected error',
+            'auth',
+            { formData: Object.fromEntries(formData.entries()) },
+            'error',
+            error
+        );
+        return { success: false, message: 'An error occurred during login.' };  
+
+    }
+}
