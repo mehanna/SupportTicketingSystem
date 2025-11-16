@@ -87,3 +87,41 @@ export async function getTickets() {
         return [];
     }
 }
+
+export async function getTicketById(ticketId: string) {
+    try{
+        const ticket = await prisma.ticket.findUnique({
+            where: {
+                id: Number(ticketId),
+            },
+        });
+        if(!ticket){
+            logEvent(
+                `Ticket with ID: ${ticketId} not found`,
+                'ticket',
+                { ticketId },
+                'warning'
+            );
+            return null;
+        }
+        
+        logEvent(
+            `Fetched ticket with ID: ${ticketId}`,
+            'ticket',
+            { ticketId },
+            'info'
+        );
+        return ticket;
+
+    }
+    catch(error){
+        logEvent(
+            `Fetching ticket with ID: ${ticketId} failed: unexpected error`,
+            'ticket',
+            { ticketId },
+            'error',
+            error
+        );
+        return null;
+    }
+}
