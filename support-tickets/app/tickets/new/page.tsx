@@ -21,6 +21,13 @@ const NewTicketPage = () => {
         <h1 className='text-3xl font-bold mb-6 text-center text-blue-600'>
             Submit a Support Ticket
         </h1>
+        {state.message && !state.success && ( 
+          <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4'>
+            {state.message}
+          </div>
+        )}
+
+
         <form action={FormAction} className='space-y-4 text-gray-700'>
             <input
             className='w-full border border-gray-200 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-400'
@@ -33,7 +40,6 @@ const NewTicketPage = () => {
             name='description'
             placeholder='Describe your issue'
             rows={4}
-            required
             />
             <select
             className='w-full border border-gray-200 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700'

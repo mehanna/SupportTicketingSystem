@@ -1,4 +1,5 @@
 'use server';
+import * as Sentry from '@sentry/nextjs';
 
 interface TicketActionState {
     success: boolean;
@@ -17,6 +18,13 @@ export async function createTicket(
     console.log('Subject:', subject);
     console.log('Description:', description);
     console.log('Priority:', priority);
+    // Adding console log to ticket creation action
+    if (!subject || !description || !priority) {
+        Sentry.captureMessage(
+            'Ticket creation failed: missing required fields', 
+            { level: 'warning' });
+        return { success: false, message: 'All fields are required.' };
+    }
 
     return { success: true, message: 'Ticket created successfully' };
 }
