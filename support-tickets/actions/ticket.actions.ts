@@ -2,6 +2,7 @@
 import { prisma } from '@/db/prisma';
 import { revalidatePath } from 'next/cache';// this is used to revalidate the path after creating a ticket
 import { logEvent } from '@/utils/sentry';
+import { log } from 'console';
 
 interface TicketActionState {
     success: boolean;
@@ -56,5 +57,33 @@ export async function createTicket(
             error
         );
         return { success: false, message: 'An error occurred while creating the ticket.' };
+    }
+}
+
+export async function getTickets() {
+    try{
+        const tickets = await prisma.ticket.findMany({
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+        log(
+            'Fetched tickets list:', 
+            'tickets',
+            { count: tickets.length },
+            'info'
+        );
+        return tickets;
+
+    }
+    catch(error){
+        logEvent(
+            'Fetching tickets failed: unexpected error',
+            'tickets',
+            {},
+            'error',
+            error
+        );
+        return [];
     }
 }
